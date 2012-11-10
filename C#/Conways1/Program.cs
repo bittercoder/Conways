@@ -6,7 +6,7 @@
         {
             var world = new World();
 
-            string[] setup = Acorn();
+            string[] setup = Puffer();
 
             world.SetupWorld(setup);
 
@@ -65,6 +65,33 @@
                     "                                  ",
                     "                                  ",
                     "                                  "
+                };
+        }
+
+
+        static string[] Puffer()
+        {
+            return new[]
+                {
+                    "                 ",
+                    "         ####    ",
+                    "        #   #    ",
+                    "            #    ",
+                    "        #  #     ",
+                    "                 ",
+                    "                 ",
+                    "        ##       ",
+                    "        # #      ",
+                    "          #      ",
+                    "        ###      ",
+                    "                 ",
+                    "                 ",
+                    "                 ",
+                    "                 ",
+                    "         ####    ",
+                    "        #   #    ",
+                    "            #    ",
+                    "        #  #     "
                 };
         }
     }
