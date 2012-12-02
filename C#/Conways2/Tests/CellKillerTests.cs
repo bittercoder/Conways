@@ -7,114 +7,169 @@ namespace Conways2.Tests
 {
     public class Tests
     {
-        Cell resultCell;
+        readonly CellList list = new CellList();
+        AddNewCellToList result;
+        CellList resultList = new CellList();
 
         [Fact]
         public void any_live_cell_with_fewer_than_two_live_neighbours_dies_when_applying_kill_underpopulated_cell_rule()
         {
-            var cell = new Cell(0, 0);
+            AddLiveCell(0, 0);
             var killer = new KillUnderpoulatedCell();
-            killer.TryExecute(cell, out resultCell);
-            Assert.False(resultCell.IsAlive);
+            killer.TryExecute(GetCellAt(0, 0), out result);
+            result.ToList(resultList);
+            Assert.Equal(CellState.Dead, GetResultCellAt(0, 0).State);
         }
 
         [Fact]
         public void any_live_cell_with_more_than_three_neighbours_dies_when_applying_kill_overpopulated_cell_rule()
         {
-            var cell = new Cell(0, 0);
-            cell.HasNeighbourAt(1, 0);
-            cell.HasNeighbourAt(0, 1);
-            cell.HasNeighbourAt(-1, 0);
-            cell.HasNeighbourAt(0, -1);
+            AddLiveCell(0, 0);
+            AddLiveCell(1, 0);
+            AddLiveCell(0, 1);
+            AddLiveCell(-1, 0);
+            AddLiveCell(0, -1);
             var killer = new KillOverpopulatedCell();
-            killer.TryExecute(cell, out resultCell);
-            Assert.False(resultCell.IsAlive);
+            killer.TryExecute(GetCellAt(0, 0), out result);
+            result.ToList(resultList);
+            Assert.Equal(CellState.Dead, GetResultCellAt(0, 0).State);
         }
 
         [Fact]
         public void any_dead_cell_with_exactly_three_live_neighbours_becomes_alive_when_applying_resurrect_cell_through_reproduction_rule()
         {
-            Cell cell = Cell.Dead(0, 0);
-            cell.HasNeighbourAt(1, 0);
-            cell.HasNeighbourAt(0, 1);
-            cell.HasNeighbourAt(-1, 0);
-
+            AddDeadCell(0, 0);
+            AddLiveCell(1, 0);
+            AddLiveCell(0, 1);
+            AddLiveCell(-1, 0);
             var resurrector = new ResurrectCellThroughReproduction();
-            resurrector.TryExecute(cell, out resultCell);
-            Assert.True(resultCell.IsAlive);
+            resurrector.TryExecute(GetCellAt(0, 0), out result);
+            result.ToList(resultList);
+            Assert.Equal(CellState.Live, GetResultCellAt(0, 0).State);
         }
 
         [Fact]
-        public void tick_cells_for_cell_with_fewer_than_two_live_neighbours_kills_cell()
+        public void get_next_generation_of_cells_for_cell_with_fewer_than_two_live_neighbours_kills_cell()
         {
-            var cell = new Cell(0, 0);
+            AddLiveCell(0, 0);
             var executor = new ExecuteConwayRules();
-            resultCell = executor.ExecuteOn(cell);
-            Assert.False(resultCell.IsAlive);
+            resultList = executor.GetNextGeneration(list);
+            Assert.Equal(CellState.Dead, GetResultCellAt(0, 0).State);
         }
 
         [Fact]
-        public void tick_cells_for_cell_with_two_live_neighbours_keeps_cell_alive()
+        public void get_next_generation_of_cells_for_cell_with_two_live_neighbours_keeps_cell_alive()
         {
-            var cell = new Cell(0, 0);
-            cell.HasNeighbourAt(1, 0);
-            cell.HasNeighbourAt(0, 1);
+            AddLiveCell(0, 0);
+            AddLiveCell(0, 1);
+            AddLiveCell(1, 0);
             var executor = new ExecuteConwayRules();
-            resultCell = executor.ExecuteOn(cell);
-            Assert.True(resultCell.IsAlive);
+            resultList = executor.GetNextGeneration(list);
+            Assert.Equal(CellState.Live, GetResultCellAt(0, 0).State);
         }
 
         [Fact]
-        public void tick_cells_for_cell_with_four_live_neighbours_kills_cell()
+        public void get_next_generation_of_cells_for_cell_with_four_live_neighbours_kills_cell()
         {
-            var cell = new Cell(0, 0);
-            cell.HasNeighbourAt(1, 0);
-            cell.HasNeighbourAt(0, 1);
-            cell.HasNeighbourAt(-1, 0);
-            cell.HasNeighbourAt(0, -1);
+            AddLiveCell(0, 0);
+            AddLiveCell(1, 0);
+            AddLiveCell(0, 1);
+            AddLiveCell(-1, 0);
+            AddLiveCell(0, -1);
             var executor = new ExecuteConwayRules();
-            resultCell = executor.ExecuteOn(cell);
-            Assert.False(resultCell.IsAlive);
+            resultList = executor.GetNextGeneration(list);
+            Assert.Equal(CellState.Dead, GetResultCellAt(0, 0).State);
+        }
+
+        [Fact]
+        public void get_next_generation_of_cells_evaluated_neighbours()
+        {
+            //  ___     -1
+            //  _XX     0 
+            //  _X_     1
+            //
+            //  -1 0 1
+
+            AddLiveCell(0, 0);
+            AddLiveCell(1, 0);
+            AddLiveCell(0, 1);
+            var executor = new ExecuteConwayRules();
+            resultList = executor.GetNextGeneration(list);
+            Assert.Equal(CellState.Live, GetResultCellAt(0, 0).State);
+            Assert.Equal(CellState.Live, GetResultCellAt(1, 0).State);
+            Assert.Equal(CellState.Live, GetResultCellAt(0, 1).State);
+        }
+
+        void AddLiveCell(int x, int y)
+        {
+            new AddNewCellToList(new Point(x, y), CellState.Live).ToList(list);
+        }
+
+        void AddDeadCell(int x, int y)
+        {
+            new AddNewCellToList(new Point(x, y), CellState.Dead).ToList(list);
+        }
+
+        Cell GetCellAt(int x, int y)
+        {
+            return new FindCellAtPosition().Find(list, new Point(x, y));
+        }
+
+        Cell GetResultCellAt(int x, int y)
+        {
+            return new FindCellAtPosition().Find(resultList, new Point(x, y));
         }
     }
 
     public class ExecuteConwayRules
     {
-        public Cell ExecuteOn(Cell cell)
+        public CellList GetNextGeneration(CellList list)
         {
-            Cell resultingCell;
-            var underpopulationKiller = new KillUnderpoulatedCell();
-            if (underpopulationKiller.TryExecute(cell, out resultingCell)) return resultingCell;
+            IEnumerable<AddNewCellToList> results = list.Cells.Select(EvaluateNextGenerationOfCell);
 
-            var overpopulationKiller = new KillOverpopulatedCell();
-            if (overpopulationKiller.TryExecute(cell, out resultingCell)) return resultingCell;
+            var nextGeneration = new CellList();
 
-            var resurrector = new ResurrectCellThroughReproduction();
-            if (resurrector.TryExecute(cell, out resultingCell)) return resultingCell;
+            foreach (AddNewCellToList result in results)
+            {
+                result.ToList(nextGeneration);
+            }
 
-            return cell.Clone();
+            return nextGeneration;
+        }
+
+        static AddNewCellToList EvaluateNextGenerationOfCell(Cell cell)
+        {
+            var rules = new ExecuteRuleOnCell[] { new KillUnderpoulatedCell(), new KillOverpopulatedCell(), new ResurrectCellThroughReproduction() };
+
+            foreach (var rule in rules)
+            {
+                AddNewCellToList resultingCell;
+                if (rule.TryExecute(cell, out resultingCell)) return resultingCell;
+            }
+
+            return new AddNewCellToList(cell.Point, cell.State);
         }
     }
 
     public abstract class ExecuteRuleOnCell
     {
-        public abstract bool TryExecute(Cell cell, out Cell resultingCell);
+        public abstract bool TryExecute(Cell cell, out AddNewCellToList resultingCell);
 
         protected int CountNeighbours(Cell cell)
         {
             var counter = new CountLiveNeighbours();
-            int neighbours = counter.Count(cell);
+            int neighbours = counter.Count(cell.List, cell.Point);
             return neighbours;
         }
     }
 
     public class ResurrectCellThroughReproduction : ExecuteRuleOnCell
     {
-        public override bool TryExecute(Cell cell, out Cell resultingCell)
+        public override bool TryExecute(Cell cell, out AddNewCellToList resultingCell)
         {
             if (CountNeighbours(cell) == 3)
             {
-                resultingCell = cell.Resurrect();
+                resultingCell = new AddNewCellToList(cell.Point, CellState.Live);
                 return true;
             }
             resultingCell = null;
@@ -124,13 +179,14 @@ namespace Conways2.Tests
 
     public class KillOverpopulatedCell : ExecuteRuleOnCell
     {
-        public override bool TryExecute(Cell cell, out Cell resultingCell)
+        public override bool TryExecute(Cell cell, out AddNewCellToList resultingCell)
         {
             if (CountNeighbours(cell) > 3)
             {
-                resultingCell = cell.Kill();
+                resultingCell = new AddNewCellToList(cell.Point, CellState.Dead);
                 return true;
             }
+
             resultingCell = null;
             return false;
         }
@@ -138,19 +194,38 @@ namespace Conways2.Tests
 
     public class CountLiveNeighbours
     {
-        public int Count(Cell cell)
+        public int Count(CellList list, Point point)
         {
-            return cell.Neighbours.Count(c => c.IsAlive);
+            var finder = new FindNeighboursOfCellAtPosition();
+            IEnumerable<Cell> cells = finder.Find(list, point);
+            return cells.Count(c => c.State == CellState.Live);
+        }
+    }
+
+    public class AddNewCellToList
+    {
+        readonly Point _position;
+        readonly CellState _state;
+
+        public AddNewCellToList(Point position, CellState state)
+        {
+            _position = position;
+            _state = state;
+        }
+
+        public void ToList(CellList list)
+        {
+            list.Cells.Add(new Cell(list, _position, _state));
         }
     }
 
     public class KillUnderpoulatedCell : ExecuteRuleOnCell
     {
-        public override bool TryExecute(Cell cell, out Cell resultingCell)
+        public override bool TryExecute(Cell cell, out AddNewCellToList resultingCell)
         {
             if (CountNeighbours(cell) < 2)
             {
-                resultingCell = cell.Kill();
+                resultingCell = new AddNewCellToList(cell.Point, CellState.Dead);
                 return true;
             }
             resultingCell = null;
@@ -158,55 +233,150 @@ namespace Conways2.Tests
         }
     }
 
+    public class FindCellAtPosition
+    {
+        public Cell Find(CellList list, Point position)
+        {
+            return list.Cells.FirstOrDefault(c => c.Point == position);
+        }
+    }
+
+    public class FindNeighboursOfCellAtPosition
+    {
+        public IEnumerable<Cell> Find(CellList list, Point position)
+        {
+            var generator = new GeneratePointsAroundPoint();
+
+            IEnumerable<Point> points = generator.Generate(position);
+
+            var cellFinder = new FindCellAtPosition();
+
+            return points.Select(p => cellFinder.Find(list, p)).Where(c => c != null);
+        }
+    }
+
+    public class GeneratePointsAroundPoint
+    {
+        public IEnumerable<Point> Generate(Point point)
+        {
+            var offsets = new[] {-1, 0, 1};
+
+            foreach (int xOffset in offsets)
+            {
+                foreach (int yOffset in offsets)
+                {
+                    if (xOffset == 0 && yOffset == 0) continue;
+                    yield return Point.OffsetFrom(point, xOffset, yOffset);
+                }
+            }
+        }
+    }
+
+    public class CellList
+    {
+        public CellList()
+        {
+            Cells = new List<Cell>();
+        }
+
+        public List<Cell> Cells { get; set; }
+    }
+
     public class Cell
     {
-        readonly List<Cell> _neighbours = new List<Cell>();
+        public Cell(CellList list, Point point, CellState state)
+        {
+            Point = point;
+            State = state;
+            List = list;
+        }
+
+        public CellList List { get; private set; }
+        public Point Point { get; private set; }
+        public CellState State { get; private set; }
+    }
+
+    public abstract class CellState
+    {
+        public static readonly CellState Dead = new DeadCellState();
+        public static readonly CellState Live = new LiveCellState();
+        public abstract bool IsAlive { get; }
+        public abstract bool IsDead { get; }
+    }
+
+    public class DeadCellState : CellState
+    {
+        public override bool IsAlive
+        {
+            get { return false; }
+        }
+
+        public override bool IsDead
+        {
+            get { return true; }
+        }
+    }
+
+    public class LiveCellState : CellState
+    {
+        public override bool IsAlive
+        {
+            get { return true; }
+        }
+
+        public override bool IsDead
+        {
+            get { return false; }
+        }
+    }
+
+    public class Point : IEquatable<Point>
+    {
         readonly int _x;
         readonly int _y;
-        bool _isAlive;
 
-        public Cell(int x, int y)
+        public Point(int x, int y)
         {
-            _isAlive = true;
             _x = x;
             _y = y;
         }
 
-        public IEnumerable<Cell> Neighbours
+        public bool Equals(Point other)
         {
-            get { return _neighbours; }
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _x == other._x && _y == other._y;
         }
 
-        public bool IsAlive
+        public override bool Equals(object obj)
         {
-            get { return _isAlive; }
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Point) obj);
         }
 
-        public static Cell Dead(int x, int y)
+        public override int GetHashCode()
         {
-            return new Cell(x, y) {_isAlive = false};
+            unchecked
+            {
+                return (_x*397) ^ _y;
+            }
         }
 
-        public Cell Kill()
+        public static bool operator ==(Point left, Point right)
         {
-            if (!_isAlive) throw new InvalidOperationException("You can not kill a dead cell");
-            return new Cell(_x, _y) {_isAlive = false};
+            return Equals(left, right);
         }
 
-        public void HasNeighbourAt(int xOffset, int yOffset)
+        public static bool operator !=(Point left, Point right)
         {
-            _neighbours.Add(new Cell(_x + xOffset, _y + yOffset));
+            return !Equals(left, right);
         }
 
-        public Cell Resurrect()
+        public static Point OffsetFrom(Point point, int xOffset, int yOffset)
         {
-            if (_isAlive) throw new InvalidOperationException("You can not resurrect a live cell");
-            return new Cell(_x, _y) {_isAlive = true};
-        }
-
-        public Cell Clone()
-        {
-            return new Cell(_x, _y) {_isAlive = IsAlive};
+            return new Point(point._x + xOffset, point._y + yOffset);
         }
     }
 }
