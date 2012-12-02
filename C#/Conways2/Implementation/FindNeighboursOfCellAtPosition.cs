@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Conways2.Tests
+namespace Conways2
 {
     public class FindNeighboursOfCellAtPosition
     {

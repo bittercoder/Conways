@@ -1,3 +1,5 @@
+using ConwayConsole;
+
 namespace Conways1
 {
     public class WorldToConwayModelWrapper : IConwayModel
@@ -15,10 +17,11 @@ namespace Conways1
             return world.IsCellAlive(new Position(x, y));
         }
 
-        public void Tick()
+        public bool Tick()
         {
             world = world.Tick();
             ticks++;
+            return true;
         }
 
         public int TotalCells

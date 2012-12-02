@@ -1,6 +1,6 @@
 using System;
 
-namespace Conways1
+namespace ConwayConsole
 {
     public class FixedClock : IClock
     {

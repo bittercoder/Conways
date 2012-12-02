@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Conways1
+namespace ConwayConsole
 {
     public class ConstantSpeedConwayModelWrapper : IConwayModel
     {
@@ -21,7 +21,7 @@ namespace Conways1
             return innerModel.IsLive(x, y);
         }
 
-        public void Tick()
+        public bool Tick()
         {
             DateTime now = clock.Now;
 
@@ -29,17 +29,21 @@ namespace Conways1
             {
                 lastTimeWeTicked = now;
                 innerModel.Tick();
+                return true;
             }
-            else
+
+            double seconds = now.Subtract(lastTimeWeTicked.Value).TotalSeconds;
+            
+            double ticks = Math.Floor(TicksPerSecond*seconds);
+
+            if (ticks > 0)
             {
-                double seconds = now.Subtract(lastTimeWeTicked.Value).TotalSeconds;
-                double ticks = Math.Floor(TicksPerSecond/seconds);
-                if (ticks > 0)
-                {
-                    for (int i = 0; i < ticks; i++) innerModel.Tick();
-                    lastTimeWeTicked = now;
-                }
+                for (int i = 0; i < ticks; i++) innerModel.Tick();
+                lastTimeWeTicked = now;
+                return true;
             }
+
+            return false;
         }
 
         public int TotalCells

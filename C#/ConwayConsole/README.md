@@ -1,0 +1,2 @@
+﻿This is a helper library which can be used to make it easy to take a conways game of life implementation and wire it up to 
+a console for display purposes (which is a nice visual way to compare relative performance of implementations etc.)

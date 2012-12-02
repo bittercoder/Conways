@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Text;
 
-namespace Conways1
+namespace ConwayConsole
 {
     public class ConwayTerminalDisplay
     {
         readonly IConwayModel _model;
         readonly int height;
         readonly int width;
+        bool? forceTick;
         int offsetX;
         int offsetY;
 
@@ -22,16 +23,39 @@ namespace Conways1
         {
             ConfigureConsole();
 
+            Redraw();
+
             while (true)
             {
-                _model.Tick();
+                bool requiresRedraw = false;
 
-                OutputBoard();
+                if (forceTick == null)
+                {
+                    requiresRedraw = _model.Tick();
+                }
+                else if (forceTick == true)
+                {
+                    requiresRedraw = _model.Tick();
+                    forceTick = false;
+                }
 
-                OutputStatusLine();
+                if (requiresRedraw)
+                {
+                    Redraw();
+                }
 
-                ProcessKeyboardInput();
+                if (ProcessKeyboardInput())
+                {
+                    Redraw();
+                }
             }
+        }
+
+        void Redraw()
+        {
+            OutputBoard();
+
+            OutputStatusLine();
         }
 
         void ConfigureConsole()
@@ -69,14 +93,22 @@ namespace Conways1
             Console.WriteLine("Total Cells: {0}, Ticks: {1}, X/Y: {2},{3}", _model.TotalCells, _model.Ticks, offsetX, offsetY);
         }
 
-        void ProcessKeyboardInput()
+        bool ProcessKeyboardInput()
         {
             if (Console.KeyAvailable)
             {
+                bool processedOutput = true;
+
                 ConsoleKeyInfo key = Console.ReadKey();
 
                 switch (key.Key)
                 {
+                    case ConsoleKey.T:
+                        forceTick = true;
+                        break;
+                    case ConsoleKey.R:
+                        forceTick = null;
+                        break;
                     case ConsoleKey.LeftArrow:
                         offsetX--;
                         break;
@@ -96,8 +128,15 @@ namespace Conways1
                         offsetX = 0;
                         offsetY = 0;
                         break;
+                    default:
+                        processedOutput = false;
+                        break;
                 }
+
+                return processedOutput;
             }
+
+            return false;
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace Conways1
+namespace ConwayConsole
 {
     public class TickCountingConwayModel : IConwayModel
     {
@@ -9,9 +9,10 @@ namespace Conways1
             return false;
         }
 
-        public void Tick()
+        public bool Tick()
         {
             Ticks++;
+            return true;
         }
 
         public int TotalCells

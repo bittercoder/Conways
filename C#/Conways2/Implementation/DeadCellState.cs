@@ -1,4 +1,4 @@
-﻿namespace Conways2.Tests
+﻿namespace Conways2
 {
     public class DeadCellState : CellState
     {
@@ -10,6 +10,11 @@
         public override bool IsDead
         {
             get { return true; }
+        }
+
+        public override string ToString()
+        {
+            return "Dead";
         }
     }
 }

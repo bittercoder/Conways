@@ -1,4 +1,5 @@
 using System;
+using ConwayConsole;
 using Xunit;
 
 namespace Conways1

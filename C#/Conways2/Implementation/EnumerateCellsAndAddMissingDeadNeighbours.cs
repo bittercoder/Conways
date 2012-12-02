@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
-namespace Conways2.Tests
+namespace Conways2
 {
     public class EnumerateCellsAndAddMissingDeadNeighbours
     {
@@ -9,23 +10,32 @@ namespace Conways2.Tests
 
         public IEnumerable<Cell> Enumerate(CellList list)
         {
-            var unEvaluatedCells = list.Cells.ToList().Where(NotYetEvaluated);
+            List<Cell> unEvaluatedCells = list.Cells.ToList();
 
             foreach (Cell cell in unEvaluatedCells)
             {
+                if (!NotYetEvaluated(cell)) continue;
+
                 yield return cell;
 
                 WasEvaluated(cell);
+            }
 
-                var unEvaluatedNeighbourCells = FindOrGenerateNeighbourCells(list, cell).Where(NotYetEvaluated);
+            foreach (Cell cell in unEvaluatedCells)
+            {
+                List<Cell> unEvaluatedNeighbourCells = FindOrGenerateNeighbourCells(list, cell).ToList();
 
                 foreach (Cell neighbourCell in unEvaluatedNeighbourCells)
                 {
+                    if (!NotYetEvaluated(neighbourCell)) continue;
+
                     yield return neighbourCell;
 
                     WasEvaluated(neighbourCell);
                 }
             }
+
+            Debug.Assert(_evaluatedPoints.Count == list.Cells.Count);
         }
 
         void WasEvaluated(Cell cell)
@@ -42,11 +52,17 @@ namespace Conways2.Tests
         {
             IEnumerable<Point> points = new GeneratePointsAroundPoint().Generate(cell.Point);
 
-            foreach (var point in points)
+            foreach (Point point in points)
             {
-                var match = new FindCellAtPosition().Find(list, point);
-                if (match != null) yield return match;
-                yield return new AddNewCellToList(point, CellState.Dead).ToList(list);
+                Cell match = new FindCellAtPosition().Find(list, point);
+                if (match != null)
+                {
+                    yield return match;
+                }
+                else
+                {
+                    yield return new AddNewCellToList(point, CellState.Dead).ToList(list);
+                }
             }
         }
     }

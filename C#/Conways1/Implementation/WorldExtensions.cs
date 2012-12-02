@@ -1,4 +1,4 @@
-using System.Linq;
+using ConwayConsole;
 
 namespace Conways1
 {
@@ -6,16 +6,7 @@ namespace Conways1
     {
         public static World SetupWorld(this World world, params string[] rows)
         {
-            foreach (var row in rows.Select((cells, y) => new {cells = cells.ToCharArray(), y}))
-            {
-                foreach (var cell in row.cells.Select((value, x) => new {value, x}))
-                {
-                    if (cell.value != ' ')
-                    {
-                        world.AddLiveCell(new Position(cell.x, row.y));
-                    }
-                }
-            }
+            CellsSetupUtility.SetupCells((x, y) => world.AddLiveCell(new Position(x, y)), rows);
 
             return world;
         }

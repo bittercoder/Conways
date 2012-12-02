@@ -1,15 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ConwayConsole;
 
 namespace Conways2
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
+            var list = new CellList();
+
+            string[] setup = ConwayBoards.Acorn();
+
+            list.SetupCells(setup);
+
+            var model = new CellListToConwayModelWrapper(list);
+            
+            var display = new ConwayTerminalDisplay(79, 35, model);
+
+            display.Start();
         }
     }
 }

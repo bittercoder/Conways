@@ -1,4 +1,4 @@
-﻿namespace Conways2.Tests
+﻿namespace Conways2
 {
     public class KillOverpopulatedCell : ExecuteRuleOnCell
     {

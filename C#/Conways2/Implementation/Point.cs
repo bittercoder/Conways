@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Conways2.Tests
+namespace Conways2
 {
     public class Point : IEquatable<Point>
     {
@@ -49,6 +49,11 @@ namespace Conways2.Tests
         public static Point OffsetFrom(Point point, int xOffset, int yOffset)
         {
             return new Point(point._x + xOffset, point._y + yOffset);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("X: {0}, Y: {1}", _x, _y);
         }
     }
 }

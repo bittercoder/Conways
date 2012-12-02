@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Conways2.Tests
+namespace Conways2
 {
     public class Tests
     {
@@ -49,8 +49,7 @@ namespace Conways2.Tests
         public void get_next_generation_of_cells_for_cell_with_fewer_than_two_live_neighbours_kills_cell()
         {
             AddLiveCell(0, 0);
-            var executor = new ExecuteConwayRules();
-            resultList = executor.GetNextGeneration(list);
+            ExecuteGameRules();
             Assert.Equal(CellState.Dead, GetResultCellAt(0, 0).State);
         }
 
@@ -60,8 +59,7 @@ namespace Conways2.Tests
             AddLiveCell(0, 0);
             AddLiveCell(0, 1);
             AddLiveCell(1, 0);
-            var executor = new ExecuteConwayRules();
-            resultList = executor.GetNextGeneration(list);
+            ExecuteGameRules();
             Assert.Equal(CellState.Live, GetResultCellAt(0, 0).State);
         }
 
@@ -73,11 +71,10 @@ namespace Conways2.Tests
             AddLiveCell(0, 1);
             AddLiveCell(-1, 0);
             AddLiveCell(0, -1);
-            var executor = new ExecuteConwayRules();
-            resultList = executor.GetNextGeneration(list);
+            ExecuteGameRules();
             Assert.Equal(CellState.Dead, GetResultCellAt(0, 0).State);
         }
-
+        
         [Fact]
         public void get_next_generation_of_cells_evaluated_neighbours()
         {
@@ -90,8 +87,7 @@ namespace Conways2.Tests
             AddLiveCell(0, 0);
             AddLiveCell(1, 0);
             AddLiveCell(0, 1);
-            var executor = new ExecuteConwayRules();
-            resultList = executor.GetNextGeneration(list);
+            ExecuteGameRules();
             Assert.Equal(CellState.Live, GetResultCellAt(0, 0).State);
             Assert.Equal(CellState.Live, GetResultCellAt(1, 0).State);
             Assert.Equal(CellState.Live, GetResultCellAt(0, 1).State);
@@ -103,9 +99,14 @@ namespace Conways2.Tests
             AddLiveCell(-1, 0);
             AddLiveCell(0, -1);
             AddLiveCell(1, 1);
+            ExecuteGameRules();
+            Assert.Equal(CellState.Live, GetResultCellAt(0, 0).State);
+        }
+
+        void ExecuteGameRules()
+        {
             var executor = new ExecuteConwayRules();
             resultList = executor.GetNextGeneration(list);
-            Assert.Equal(CellState.Live, GetResultCellAt(0, 0).State);
         }
 
         void AddLiveCell(int x, int y)

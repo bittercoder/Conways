@@ -1,4 +1,6 @@
-﻿namespace Conways1
+﻿using ConwayConsole;
+
+namespace Conways1
 {
     internal class Program
     {
@@ -6,7 +8,7 @@
         {
             var world = new World();
 
-            string[] setup = Puffer();
+            string[] setup = ConwayBoards.Puffer();
 
             world.SetupWorld(setup);
 
@@ -21,78 +23,6 @@
             var display = new ConwayTerminalDisplay(79, 35, model);
 
             display.Start();
-        }
-
-        static string[] Acorn()
-        {
-            return new[]
-                {
-                    "                                  ",
-                    "         #                        ",
-                    "           #                      ",
-                    "        ##  ###                   ",
-                    "                                  ",
-                    "                                  ",
-                    "                                  ",
-                    "                                  "
-                };
-        }
-
-        static string[] DieHard()
-        {
-            return new[]
-                {
-                    "                                  ",
-                    "              #                   ",
-                    "        ##                        ",
-                    "         #   ###                  ",
-                    "                                  ",
-                    "                                  ",
-                    "                                  ",
-                    "                                  "
-                };
-        }
-
-        static string[] R_pentomino()
-        {
-            return new[]
-                {
-                    "                                  ",
-                    "         ##                       ",
-                    "        ##                        ",
-                    "         #                        ",
-                    "                                  ",
-                    "                                  ",
-                    "                                  ",
-                    "                                  "
-                };
-        }
-
-
-        static string[] Puffer()
-        {
-            return new[]
-                {
-                    "                 ",
-                    "         ####    ",
-                    "        #   #    ",
-                    "            #    ",
-                    "        #  #     ",
-                    "                 ",
-                    "                 ",
-                    "        ##       ",
-                    "        # #      ",
-                    "          #      ",
-                    "        ###      ",
-                    "                 ",
-                    "                 ",
-                    "                 ",
-                    "                 ",
-                    "         ####    ",
-                    "        #   #    ",
-                    "            #    ",
-                    "        #  #     "
-                };
         }
     }
 }
