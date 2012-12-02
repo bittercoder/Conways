@@ -33,7 +33,7 @@ namespace ConwayConsole
             }
 
             double seconds = now.Subtract(lastTimeWeTicked.Value).TotalSeconds;
-            
+
             double ticks = Math.Floor(TicksPerSecond*seconds);
 
             if (ticks > 0)
