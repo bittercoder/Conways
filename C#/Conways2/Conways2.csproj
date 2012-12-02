@@ -46,7 +46,24 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\CellKillerTests.cs" />
+    <Compile Include="Implementation\AddNewCellToList.cs" />
+    <Compile Include="Implementation\Cell.cs" />
+    <Compile Include="Tests\Tests.cs" />
+    <Compile Include="Implementation\CellList.cs" />
+    <Compile Include="Implementation\CellState.cs" />
+    <Compile Include="Implementation\CountLiveNeighbours.cs" />
+    <Compile Include="Implementation\DeadCellState.cs" />
+    <Compile Include="Implementation\EnumerateCellsAndAddMissingDeadNeighbours.cs" />
+    <Compile Include="Implementation\ExecuteConwayRules.cs" />
+    <Compile Include="Implementation\ExecuteRuleOnCell.cs" />
+    <Compile Include="Implementation\FindCellAtPosition.cs" />
+    <Compile Include="Implementation\FindNeighboursOfCellAtPosition.cs" />
+    <Compile Include="Implementation\GeneratePointsAroundPoint.cs" />
+    <Compile Include="Implementation\KillOverpopulatedCell.cs" />
+    <Compile Include="Implementation\KillUnderpoulatedCell.cs" />
+    <Compile Include="Implementation\LiveCellState.cs" />
+    <Compile Include="Implementation\Point.cs" />
+    <Compile Include="Implementation\ResurrectCellThroughReproduction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
